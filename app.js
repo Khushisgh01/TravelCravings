@@ -100,12 +100,18 @@ app.use((req,res,next)=>{
   next();
 })
 
+// Redirect the root path to the main listings page
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
+// ------------------------------------------------------------------------------------------
+
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
 // ---------------------- 404 HANDLER ---------------------- //
-// In Express 5, wildcards must have names
+// This catches any request that did not match the routes above.
 app.all("/*splat", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
@@ -113,6 +119,6 @@ app.all("/*splat", (req, res, next) => {
 // ---------------------- ERROR HANDLER ---------------------- //
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong!" } = err;
-  // res.status(statusCode).send(message);
+  // Renders the error.ejs view with the appropriate status code and message
   res.status(statusCode).render("error.ejs", { message });
 });
